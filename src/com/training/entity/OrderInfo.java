@@ -11,10 +11,7 @@ public class OrderInfo {
 	private String status;
 	private String payment;
 	private HashMap<Integer, Integer> menuCode;
-
-	public OrderInfo() {
-		super();
-	}
+	private ArrayList<String> menuItem;
 
 	public HashMap<Integer, Integer> getMenuCode() {
 		return menuCode;
@@ -24,8 +21,7 @@ public class OrderInfo {
 		this.menuCode = menuCode;
 	}
 
-	public OrderInfo(int employeeId, int orderNo, int tableNo, String status, String payment,
-			HashMap<Integer, Integer> menuCode) {
+	public OrderInfo(int employeeId, int orderNo, int tableNo, String status, String payment,HashMap<Integer, Integer> menuCode, ArrayList<String> menuItem) {
 		super();
 		this.employeeId = employeeId;
 		this.orderNo = orderNo;
@@ -33,6 +29,8 @@ public class OrderInfo {
 		this.status = status;
 		this.payment = payment;
 		this.menuCode = menuCode;
+		this.menuItem=menuItem;
+		
 	}
 
 	public int getEmployeeId() {
@@ -78,7 +76,9 @@ public class OrderInfo {
 	@Override
 	public String toString() {
 		return "OrderInfo [employeeId=" + employeeId + ", orderNo=" + orderNo + ", tableNo=" + tableNo + ", status="
-				+ status + ", payment=" + payment + ", menuCode=" + menuCode + "]";
+				+ status + ", payment=" + payment + ", menuCode=" + menuCode + ", menuItem=" + menuItem + "]";
 	}
+
+	
 
 }

@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -27,40 +28,55 @@ public class WaiterDAO implements RestDAO<OrderInfo> {
 
 	@Override
 	public OrderInfo getOrderInfo(int orderNo) {
+		ArrayList<String> menuItem = new ArrayList<>();
+		int OrderNo = 0, empId = 0, tableNo = 0, menuCode = 0, quantity = 0;
+		String status = null, payment = null;
 		OrderInfo orderInfo = null;
-		int OrderNo = 0;
-		int employeeId = 0;
-		int tableNo = 0;
-		String status = null;
-		String payment = null;
-		HashMap<Integer, Integer> menuCodes = new HashMap<>();
-		try {
-			String sql = "Select * from orderInfo";
-			String sql2 = "Select * from ORDERTEMPDETAILS where orderno =?";
-
-			PreparedStatement pstmt, pstmt1;
-			pstmt = con.prepareStatement(sql);
-			ResultSet rs = pstmt.executeQuery();
-			pstmt1 = con.prepareStatement(sql2);
-			while (rs.next()) {
-				OrderNo = rs.getInt("orderno");
-				employeeId = rs.getInt("empid");
-				tableNo = rs.getInt("tableno");
-				status = rs.getString("status");
-				payment = rs.getString("payment");
+		HashMap<Integer,Integer> menuCodes = new HashMap<Integer,Integer>();
+		String sql1 = "select * from ORDERINFO where ORDERNO=?";
+		String sql2 = "select * from ORDERTEMPDETAILS where ORDERno=?";
+		
+		try{
+			PreparedStatement pstmt1 = con.prepareStatement(sql1);
+			pstmt1.setInt(1, orderNo);
+			ResultSet rs = pstmt1.executeQuery();
+			while(rs.next()){
+				OrderNo = rs.getInt("ORDERNO");
+				empId = rs.getInt("EMPID");
+				tableNo = rs.getInt("TABLENO");
+				status = rs.getString("STATUS");
+				payment = rs.getString("PAYMENT");
 			}
-			pstmt1.setInt(1, OrderNo);
-			ResultSet rs2 = pstmt1.executeQuery();
-			while (rs2.next()) {
-				menuCodes.put(rs2.getInt("MENUCODE"), rs2.getInt("QUANTITY"));
+			PreparedStatement pstmt2 = con.prepareStatement(sql2);
+			pstmt2.setInt(1, OrderNo);
+			ResultSet rs2 = pstmt2.executeQuery();
+			while(rs2.next()){
+				menuCodes.put(rs2.getInt("MENUCODE"),rs2.getInt("QUANTITY"));
+				menuItem.add(getMenuItem(rs2.getInt("MENUCODE")));
 			}
+			
+			orderInfo = new OrderInfo(empId,OrderNo,tableNo,status,payment,menuCodes,menuItem);
 
-			orderInfo = new OrderInfo(employeeId, OrderNo, tableNo, status, payment, menuCodes);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
+		} catch(Exception e){
 			e.printStackTrace();
 		}
 		return orderInfo;
+	}
+
+	private String getMenuItem(int menuCode) {
+		String menuDetail = null;
+		String sql = "select * from MENUITEMS where MENUCODE=?";
+		try{
+			PreparedStatement pstmt = con.prepareStatement(sql);
+			pstmt.setInt(1, menuCode);
+			ResultSet rs = pstmt.executeQuery();
+			while(rs.next()){
+				menuDetail = rs.getString("DISHNAME");
+			}
+		} catch (Exception e){
+			e.printStackTrace();
+		}
+		return menuDetail;
 	}
 
 	@Override
@@ -190,6 +206,12 @@ public class WaiterDAO implements RestDAO<OrderInfo> {
 			e.printStackTrace();
 		}
 		return rowDeleted;
+	}
+
+	@Override
+	public void showOrderItems(int orderNo) {
+		String sql1 = "Select * ?";
+		
 	}
 
 }

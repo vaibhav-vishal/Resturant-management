@@ -16,4 +16,6 @@ public interface RestDAO<T> {
 	public OrderInfo getOrderInfo(int orderNo);
 
 	public int updateOrder(int orderNo, int quantity, int menuCode);
+	
+	public void showOrderItems(int orderNo);
 }
